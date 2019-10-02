@@ -7,6 +7,14 @@
   <version>1.0-SNAPSHOT</version>
   <name>hello Maven Webapp</name>
   <url>http://maven.apache.org</url>
+
+  <properties>
+    <frontend-src-dir>${project.basedir}/src/main/ui</frontend-src-dir>
+    <node.version>v10.15.0</node.version>
+    <yarn.version>v1.12.3</yarn.version>
+    <frontend-maven-plugin.version>1.7.6</frontend-maven-plugin.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -15,8 +23,8 @@
       <scope>test</scope>
     </dependency>
     <!--
-  https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api 
-  -->
+      https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api 
+      -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -35,6 +43,7 @@
       <artifactId>spring-boot-starter-thymeleaf</artifactId>
       <version>2.0.0.RELEASE</version>
     </dependency>
+
   </dependencies>
   <build>
     <finalName>hello</finalName>
@@ -58,6 +67,47 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <version>2.0.0.RELEASE</version>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>${frontend-maven-plugin.version}</version>
+        <configuration>
+          <nodeVersion>${node.version}</nodeVersion>
+          <yarnVersion>${yarn.version}</yarnVersion>
+          <workingDirectory>${frontend-src-dir}</workingDirectory>
+          <installDirectory>${project.build.directory}</installDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>install-frontend-tools</id>
+            <goals>
+              <goal>install-node-and-yarn</goal>
+            </goals>
+          </execution>
+
+          <execution>
+            <id>yarn-install</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+
+          <execution>
+            <id>build-frontend</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <phase>prepare-package</phase>
+            <configuration>
+              <arguments>build</arguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
